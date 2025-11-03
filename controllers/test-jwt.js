@@ -1,5 +1,3 @@
-// controllers/test-jwt.js
-
 const express = require('express');
 const jwt = require('jsonwebtoken');
 
