@@ -5,15 +5,20 @@ const userSchema = mongoose.Schema({
     type: String,
     require: true,
   },
-  hashedPassword: {
+  password: {
     type: String,
     require: true,
+  },
+  role: {
+    type: String,
+    require: true,
+    enum: ['Owner', 'Customer'],
   },
 });
 
 userSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    delete returnedObject.hashedPassword;
+    delete returnedObject.password;
   },
 });
 
