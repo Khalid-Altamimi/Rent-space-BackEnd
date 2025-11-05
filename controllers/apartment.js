@@ -2,12 +2,13 @@ const Apartment = require('../models/apartment.js');
 const express = require('express');
 const router = express.Router();
 
+const authorizeRole = require('../middleware/authorize-role.js');
+
 // basic code for apartments
 
 
-// add verify for owner only (token) to create (use middleware)
 // , add cloudinary, handel the booking calander
-router.post('/', async (req, res) => {
+router.post('/', authorizeRole('Owner'), async (req, res) => {
     try {
         const createdApartment = await Apartment.create(req.body);
         res.status(201).json(createdApartment);
