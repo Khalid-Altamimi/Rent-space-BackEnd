@@ -52,7 +52,8 @@ router.get('/:apartmentId', async (req, res) => {
     }
 });
 
-
+// works fine for now
+// add verify for owner only (token) to delete
 router.delete('/:apartmentId', async (req, res) => {
   
     try {
@@ -78,6 +79,7 @@ router.delete('/:apartmentId', async (req, res) => {
 });
 
 // works fine for now
+// add verify for owner only (token) to update
 router.put('/:apartmentId', async (req, res) => {
   try {
         const updatedApartment = await Apartment.findByIdAndUpdate(req.params.apartmentId, req.body, { new: true, runValidators: true } );
