@@ -17,6 +17,7 @@ const apartmentRouter = require('./controllers/apartment.js');
 
 // MiddleWare
 const verifyToken = require('./middleware/verify-token');
+const Apartment = require('./models/apartment.js');
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -31,6 +32,25 @@ app.use(logger('dev'));
 // home page will be public (change code from line  32-37)
 // Public
 app.use('/auth', authCtrl);
+
+app.get('/apartments', async (req, res ) =>{
+  try {
+    const list = await Apartment.find();
+    res.status(200).json(list);
+  } catch (err) {
+    res.status(500).json({err: err.message });
+  }
+});
+
+app.get('/apartments/:apartmentId', async (req, res ) =>{
+  try {
+    const apt = await Apartment.findById(req.params.apartmentId);
+    if(!apt) return res.status(404).json({ err: 'Apartment not found' });
+    res.status(200).json(apt);
+  } catch (err) {
+    res.status(500).json({err: err.message });
+  }
+});
 
 // Protected Routes
 app.use(verifyToken);
