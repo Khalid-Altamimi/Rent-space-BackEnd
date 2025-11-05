@@ -5,7 +5,8 @@ const router = express.Router();
 // basic code for apartments
 
 
-// add verify for owner only (token) to create, add cloudinary, handel the booking calander
+// add verify for owner only (token) to create (use middleware)
+// , add cloudinary, handel the booking calander
 router.post('/', async (req, res) => {
     try {
         const createdApartment = await Apartment.create(req.body);
@@ -15,6 +16,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+// works fine for now
 router.get('/', async (req, res) => {
   
     try {
@@ -25,11 +27,12 @@ router.get('/', async (req, res) => {
     }
 });
 
+// works fine for now
 router.get('/:apartmentId', async (req, res) => {
   
     try {
         
-        const foundApartment = await foundApartment.findById(req.params.apartmentId);
+        const foundApartment = await Apartment.findById(req.params.apartmentId);
         
         if (!foundApartment) {
             res.status(404);
