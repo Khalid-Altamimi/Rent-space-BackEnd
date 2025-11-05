@@ -28,6 +28,7 @@ app.use(cors({ origin: 'http://localhost:5173' })); //port 5173 for API sorce
 app.use(express.json());
 app.use(logger('dev'));
 
+// home page will be public (change code from line  32-37)
 // Public
 app.use('/auth', authCtrl);
 
