@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 // Controllers
 const authCtrl = require('./controllers/auth');
 const usersCtrl = require('./controllers/users');
+//const apartmentRouter = require('./controllers/apartment.js');
 
 // MiddleWare
 const verifyToken = require('./middleware/verify-token');
@@ -23,7 +24,7 @@ mongoose.connection.on('connected', () => {
   console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
 });
 
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:5173' })); //port 5173 for API sorce
 app.use(express.json());
 app.use(logger('dev'));
 
