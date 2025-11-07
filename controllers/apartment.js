@@ -86,15 +86,22 @@ router.delete('/:apartmentId', authorizeRole('Owner'), async (req, res) => {
 });
 
 // works fine for now
-// add verify for owner only (token) to update
-router.put('/:apartmentId', async (req, res) => {
+router.put('/:apartmentId', authorizeRole('Owner'), async (req, res) => {
   try {
-        const updatedApartment = await Apartment.findByIdAndUpdate(req.params.apartmentId, req.body, { new: true, runValidators: true } );
-        
-        if (!updatedApartment) {
+
+        const foundApartment = await Apartment.findById(req.params.apartmentId);
+
+        if (!foundApartment) {
             res.status(404);
             throw new Error('Apartment not found.');
         }
+
+        if (foundApartment.OwnerId.toString() !== req.user._id.toString()) {
+            res.status(403);
+            throw new Error('Not authorized to update this apartment.');
+        }
+
+        const updatedApartment = await Apartment.findByIdAndUpdate(req.params.apartmentId, req.body, { new: true, runValidators: true } );
         
         res.status(200).json(updatedApartment);
   
