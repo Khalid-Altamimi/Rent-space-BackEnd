@@ -54,17 +54,23 @@ router.get('/:apartmentId', async (req, res) => {
 });
 
 // works fine for now
-// add verify for owner only (token) to delete
-router.delete('/:apartmentId', async (req, res) => {
+router.delete('/:apartmentId', authorizeRole('Owner'), async (req, res) => {
   
     try {
         
-        const foundApartment = await Apartment.findByIdAndDelete(req.params.apartmentId);
+        const foundApartment = await Apartment.findById(req.params.apartmentId);
         
         if (!foundApartment) {
             res.status(404);
             throw new Error('Apartment not found.');
         }
+
+        if (foundApartment.OwnerId.toString() !== req.user._id.toString()) {
+            res.status(403);
+            throw new Error('Not authorized to delete this apartment.');
+        }
+
+        await foundApartment.deleteOne();
         
         res.status(200).json(foundApartment);
     
