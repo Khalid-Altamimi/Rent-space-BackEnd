@@ -27,11 +27,8 @@ const listing = await Listing.findById(listingId);
     if (!listing) return res.status(404).json({ message: "Listing not found" });
     const overlap = await Booking.findOne({
         listingId,
-        $or: [
-            {startDate: {$lte:endDate, $gte:startDate}},
-            {endDate: {$lte:startDate, $gte:endDate}},
-            {startDate: {$lte:startDate}, endDate:{$gte: endDate}},
-        ]
+        startDate: { $lt: new Date(endDate) },   // [start:end)
+        endDate:   { $gt: new Date(startDate) } 
     });
     if (overlap) return res.status(400).json({message: "This date range is already booked"})
     const days =
