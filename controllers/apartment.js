@@ -87,6 +87,13 @@ router.delete('/:apartmentId', authorizeRole('Owner'), async (req, res) => {
             throw new Error('Not authorized to delete this apartment.');
         }
 
+        
+        for (const img of foundApartment.ApartmentImg) {
+          if (img.cloudinary_id) {
+            await cloudinary.uploader.destroy(img.cloudinary_id);
+          }
+        }
+
         await foundApartment.deleteOne();
         
         res.status(200).json(foundApartment);
