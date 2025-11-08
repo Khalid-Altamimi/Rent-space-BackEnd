@@ -2,13 +2,31 @@ const Apartment = require('../models/apartment.js');
 const express = require('express');
 const router = express.Router();
 
+const authorizeRole = require('../middleware/authorize-role.js');
+
+const upload = require('../config/multer')
+const cloudinary = require('../config/cloudinary')
+
 // basic code for apartments
 
 
-// add verify for owner only (token) to create (use middleware)
-// , add cloudinary, handel the booking calander
-router.post('/', async (req, res) => {
+//handel the booking calander
+router.post('/', authorizeRole('Owner'), upload.array('ApartmentImg'), async (req, res) => {
     try {
+
+        req.body.ApartmentImg = []; 
+        const ApartmenImages = req.files;
+        
+        /* we take the images from the form and store them in ApartmenImages
+        then we push each image in the array and give it (url, image link string) 
+        and (_id, image cloud storage) */
+        ApartmenImages.forEach(file => {
+            req.body.ApartmentImg.push({
+            url: file.path,
+            cloudinary_id: file.filename
+            });
+        }); 
+        
         const createdApartment = await Apartment.create(req.body);
         res.status(201).json(createdApartment);
     } catch (err) {
@@ -53,17 +71,23 @@ router.get('/:apartmentId', async (req, res) => {
 });
 
 // works fine for now
-// add verify for owner only (token) to delete
-router.delete('/:apartmentId', async (req, res) => {
+router.delete('/:apartmentId', authorizeRole('Owner'), async (req, res) => {
   
     try {
         
-        const foundApartment = await Apartment.findByIdAndDelete(req.params.apartmentId);
+        const foundApartment = await Apartment.findById(req.params.apartmentId);
         
         if (!foundApartment) {
             res.status(404);
             throw new Error('Apartment not found.');
         }
+
+        if (foundApartment.OwnerId.toString() !== req.user._id.toString()) {
+            res.status(403);
+            throw new Error('Not authorized to delete this apartment.');
+        }
+
+        await foundApartment.deleteOne();
         
         res.status(200).json(foundApartment);
     
@@ -79,15 +103,22 @@ router.delete('/:apartmentId', async (req, res) => {
 });
 
 // works fine for now
-// add verify for owner only (token) to update
-router.put('/:apartmentId', async (req, res) => {
+router.put('/:apartmentId', authorizeRole('Owner'), async (req, res) => {
   try {
-        const updatedApartment = await Apartment.findByIdAndUpdate(req.params.apartmentId, req.body, { new: true, runValidators: true } );
-        
-        if (!updatedApartment) {
+
+        const foundApartment = await Apartment.findById(req.params.apartmentId);
+
+        if (!foundApartment) {
             res.status(404);
             throw new Error('Apartment not found.');
         }
+
+        if (foundApartment.OwnerId.toString() !== req.user._id.toString()) {
+            res.status(403);
+            throw new Error('Not authorized to update this apartment.');
+        }
+
+        const updatedApartment = await Apartment.findByIdAndUpdate(req.params.apartmentId, req.body, { new: true, runValidators: true } );
         
         res.status(200).json(updatedApartment);
   
