@@ -35,7 +35,7 @@ router.post('/', authorizeRole('Owner'), upload.array('ApartmentImg'), async (re
     }
 });
 
-// works fine for now
+
 router.get('/', async (req, res) => {
   
     try {
@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// works fine for now
+
 router.get('/:apartmentId', async (req, res) => {
   
     try {
@@ -71,7 +71,7 @@ router.get('/:apartmentId', async (req, res) => {
     }
 });
 
-// works fine for now
+
 router.delete('/:apartmentId', authorizeRole('Owner'), async (req, res) => {
   
     try {
