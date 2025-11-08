@@ -7,10 +7,7 @@ const authorizeRole = require('../middleware/authorize-role.js');
 const upload = require('../config/multer')
 const cloudinary = require('../config/cloudinary')
 
-// basic code for apartments
 
-
-//handel the booking calander
 router.post('/', authorizeRole('Owner'), upload.array('ApartmentImg'), async (req, res) => {
     try {
 
@@ -26,6 +23,10 @@ router.post('/', authorizeRole('Owner'), upload.array('ApartmentImg'), async (re
             cloudinary_id: file.filename
             });
         }); 
+
+        req.body.OwnerId = req.user._id;
+
+        req.body.BookingCalendar = [];
         
         const createdApartment = await Apartment.create(req.body);
         res.status(201).json(createdApartment);

@@ -71,7 +71,7 @@ const apartmentSchema = new mongoose.Schema({
 
   ApartmentRating: {
     type: Number,
-    default: 0, 
+    default: 3, 
   },
 
   BookingCalendar: [bookingSchema], //Embeded
