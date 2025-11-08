@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Booking = require("../models/booking");
-const Listing = require("../models/listing");
 const verifyToken = require("../middleware/verify-token");
 const Apartment = require("../models/apartment");
+
+
 router.get('/listing/:listingId/bookedDates', async (req, res)=> {
 try {
 const bookings = await Booking.find({listingId: req.params.listingId});
