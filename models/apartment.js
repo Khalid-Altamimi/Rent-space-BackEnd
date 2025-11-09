@@ -1,10 +1,35 @@
 const mongoose = require('mongoose');
 
+//-----------------------------------------------Embeded
 const imagesSchema = new mongoose.Schema({
   url: { type: String},
   cloudinary_id: { type: String},
 });
 
+const bookingSchema = new mongoose.Schema({
+
+    userId: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref:'User',
+    },
+    startDate : {
+        type:Date ,
+        required:true
+    },
+    endDate: {
+        type:Date ,
+        required:true
+    },
+    totalPrice: {
+        type:Number, 
+        required:true
+    },
+  },  
+    { timestamps: true 
+
+});
+
+//-----------------------------------------------Model
 const apartmentSchema = new mongoose.Schema({
   ApartmentName: {
     type: String,
@@ -46,14 +71,10 @@ const apartmentSchema = new mongoose.Schema({
 
   ApartmentRating: {
     type: Number,
-    default: 0, 
+    default: 3, 
   },
 
-  BookingCalendar: {// can be changed if it didnt work
-    type: Map,
-    of: Boolean,
-    default: {},
-  },
+  BookingCalendar: [bookingSchema], //Embeded
   
   OwnerId: {
     type: mongoose.Schema.Types.ObjectId,

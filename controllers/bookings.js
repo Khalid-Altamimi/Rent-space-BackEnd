@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Booking = require("../models/booking");
 const verifyToken = require("../middleware/verify-token");
-const apartment = require("../models/apartment");
-const { date } = require("joi");
+const Apartment = require("../models/apartment");
+
 
 
 router.get('/apartment/:apartmentId/bookedDates', async (req, res)=> {
@@ -37,7 +37,7 @@ const apartment = await Listing.findById(apartmentId);
     const days =
       (new Date(endDate).getTime() - new Date(startDate).getTime()) /
       (1000 * 60 * 60 * 24);
-    const totalPrice = Math.ceil(days) *apartment.ApartmentPrice ;
+    const totalPrice = Math.ceil(days) * Apartment.ApartmentPrice ;
     const booking = new Booking({
         apartmentId,
         userId:req.user._id,
