@@ -2,12 +2,13 @@ const express = require("express");
 const router = express.Router();
 const Booking = require("../models/booking");
 const verifyToken = require("../middleware/verify-token");
-const Apartment = require("../models/apartment");
+const apartment = require("../models/apartment");
+const { date } = require("joi");
 
 
-router.get('/listing/:listingId/bookedDates', async (req, res)=> {
+router.get('/apartment/:apartmentId/bookedDates', async (req, res)=> {
 try {
-const bookings = await Booking.find({listingId: req.params.listingId});
+const bookings = await Booking.find({apartmentId: req.params.apartmentId});
 const bookedDates = bookings.map((b) => ({
     start:b.startDate,
     end: b.endDate, 
@@ -21,14 +22,14 @@ catch (err) {
 })
 router.post("/",verifyToken, async (req,res) => {
 try{
-const {listingId, startDate, endDate} = req.body;
-if (!listingId || !startDate || !endDate){
+const {apartmentId, startDate, endDate} = req.body;
+if (!apartmentId || !startDate || !endDate){
     return res.status(400).json({message: "Missing booking info"})
 }
-const listing = await Listing.findById(listingId);
-    if (!listing) return res.status(404).json({ message: "Listing not found" });
+const apartment = await Listing.findById(apartmentId);
+    if (!apartment) return res.status(404).json({ message: "Listing not found" });
     const overlap = await Booking.findOne({
-        listingId,
+        apartmentId,
         startDate: { $lt: new Date(endDate) },   // [start:end)
         endDate:   { $gt: new Date(startDate) } 
     });
@@ -36,12 +37,12 @@ const listing = await Listing.findById(listingId);
     const days =
       (new Date(endDate).getTime() - new Date(startDate).getTime()) /
       (1000 * 60 * 60 * 24);
-    const totalPrice = Math.ceil(days) * listing.price;
+    const totalPrice = Math.ceil(days) *apartment.ApartmentPrice ;
     const booking = new Booking({
-        listingId,
+        apartmentId,
         userId:req.user._id,
-        startDate,
-        endDate,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
         totalPrice
     })
     await booking.save()
@@ -51,7 +52,7 @@ const listing = await Listing.findById(listingId);
 catch (err) {
     res.status(500).json({message: err.message})
 }
-})
+});
 /* 
 router.delete('/:bookingId',verifyToken, async (req,res) => {
     try{
