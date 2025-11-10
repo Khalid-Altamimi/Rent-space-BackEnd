@@ -1,7 +1,8 @@
 const Apartment = require('../models/apartment.js');
 const express = require('express');
 const router = express.Router();
-
+const Booking = require('../models/booking.js');
+const verifyToken = require('../middleware/verify-token.js');
 const authorizeRole = require('../middleware/authorize-role.js');
 
 const upload = require('../config/multer')
@@ -207,7 +208,7 @@ router.get('/city/:city', async (req, res) => {
 
 //-----------------Booking routes---------------------//
 
-/*
+
 router.get('/apartment/:apartmentId/bookedDates', async (req, res)=> {
 try {
 const bookings = await Booking.find({apartmentId: req.params.apartmentId});
@@ -255,7 +256,26 @@ catch (err) {
     res.status(500).json({message: err.message})
 }
 });
+router.get("/user/:userId", verifyToken, async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        if (req.user._id.toString() !== userId && req.user.role !== "Owner") {
+            return res.status(403).json({ message: "Not authorized to view these bookings" });
+        }
 
+        const bookings = await Booking.find({ userId }).populate({
+            path: 'apartmentId',
+            select: 'ApartmentName ApartmentPrice ApartmentCity ApartmentImg',
+        });
+
+        res.status(200).json(bookings);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+/*
 router.delete('/:bookingId',verifyToken, async (req,res) => {
     try{
     const booking = await Booking.findById(req.params.bookingId);
