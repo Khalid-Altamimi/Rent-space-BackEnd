@@ -15,6 +15,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+// not used for now
 router.get('/current-user', async (req, res) => {
   try {
     // Get a list of all users, but only return their username and _id
@@ -26,6 +27,7 @@ router.get('/current-user', async (req, res) => {
   }
 });
 
+// not used for now
 router.get('/:id', async (req, res) => {
   try {
     // Get a list of all users, but only return their username and _id
