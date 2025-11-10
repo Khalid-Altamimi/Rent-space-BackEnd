@@ -7,7 +7,7 @@ const User = require('../models/user');
 router.get('/', async (req, res) => {
   try {
     // Get a list of all users, but only return their username and _id
-    const users = await User.find({}, 'username');
+    const users = await User.find({}, 'username role');
 
     res.json(users);
   } catch (err) {
