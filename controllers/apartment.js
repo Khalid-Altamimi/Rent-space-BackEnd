@@ -1,7 +1,6 @@
 const Apartment = require('../models/apartment.js');
 const express = require('express');
 const router = express.Router();
-const Booking = require('../models/booking.js');
 const verifyToken = require('../middleware/verify-token.js');
 const authorizeRole = require('../middleware/authorize-role.js');
 
@@ -208,7 +207,8 @@ router.get('/city/:city', async (req, res) => {
 
 //-----------------Booking routes---------------------//
 
-
+// Useapartmet model
+/*
 router.get('/apartment/:apartmentId/bookedDates', async (req, res)=> {
 try {
 const bookings = await Booking.find({apartmentId: req.params.apartmentId});
@@ -287,6 +287,10 @@ router.get("/apartmentBookings/:apartmentId", verifyToken, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+
+*/
+
 /*
 router.delete('/:bookingId',verifyToken, async (req,res) => {
     try{
