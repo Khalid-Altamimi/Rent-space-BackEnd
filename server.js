@@ -33,43 +33,7 @@ app.use(logger('dev'));
 
 app.use(express.static(path.join(__dirname, "public"))); // for photos
 
-// home page will be public (change code from line  32-37)
-// Public
 app.use('/auth', authCtrl);
-
-app.get('/', async (req, res ) =>{
-  try {
-    const list = await Apartment.find();
-    res.status(200).json(list);
-  } catch (err) {
-    res.status(500).json({err: err.message });
-  }
-});
-
-// no need for the rest
-/*
-app.get('/apartments/:apartmentId', async (req, res ) =>{
-  try {
-    const apt = await Apartment.findById(req.params.apartmentId);
-    if(!apt) return res.status(404).json({ err: 'Apartment not found' });
-    res.status(200).json(apt);
-  } catch (err) {
-    res.status(500).json({err: err.message });
-  }
-});
-
-app.use((req, res, next) => {
-  const authHeader = req.headers.authorization || '';
-  if (!authHeader) {
-    return res.redirect(302, '/');
-  } 
-  
-  next();
-});
-*/
-
-// Protected Routes
-app.use(verifyToken);
 app.use('/users', usersCtrl);
 app.use('/apartments', apartmentRouter);
 
