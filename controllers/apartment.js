@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
 // create apartment
 router.post('/', verifyToken, authorizeRole('Owner'), upload.array('ApartmentImg'), async (req, res) => {
     try {
-        console.log(authorizeRole('Owner'));
+        
         req.body.ApartmentImg = [];
         const ApartmenImages = req.files;
         console.log(ApartmenImages);
