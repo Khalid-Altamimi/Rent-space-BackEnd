@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 });
 
 // create apartment
-router.post('/', verifyToken, authorizeRole('Owner'), upload.array('ApartmentImg'), async (req, res) => {
+router.post('/', verifyToken, upload.array('ApartmentImg'), async (req, res) => {
     try {
 
         req.body.ApartmentImg = [];
