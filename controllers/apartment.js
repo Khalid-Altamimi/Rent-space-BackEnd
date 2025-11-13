@@ -5,7 +5,8 @@ const verifyToken = require('../middleware/verify-token.js');
 const authorizeRole = require('../middleware/authorize-role.js');
 
 const upload = require('../config/multer')
-const cloudinary = require('../config/cloudinary')
+const cloudinary = require('../config/cloudinary');
+const e = require('cors');
 
 //-----------------Apartment(CRUD)----------------//
 
@@ -207,11 +208,14 @@ router.get('/city/:city', async (req, res) => {
 //-----------------Booking routes---------------------//
 
 // Useapartmet model
-/*
+
 router.get('/apartment/:apartmentId/bookedDates', async (req, res)=> {
 try {
-const bookings = await Booking.find({apartmentId: req.params.apartmentId});
-const bookedDates = bookings.map((b) => ({
+const apartment = await Apartment.findById(req.params.apartmentId);
+    if (!apartment) {
+      return res.status(404).json({ message: 'Apartment not found' });
+    }
+const bookedDates = apartment.BookingCalendar.map((b) => ({
     start:b.startDate,
     end: b.endDate, 
     
@@ -228,27 +232,29 @@ const {apartmentId, startDate, endDate} = req.body;
 if (!apartmentId || !startDate || !endDate){
     return res.status(400).json({message: "Missing booking info"})
 }
-const apartment = await Listing.findById(apartmentId);
-    if (!apartment) return res.status(404).json({ message: "Listing not found" });
-    const overlap = await Booking.findOne({
-        apartmentId,
-        startDate: { $lt: new Date(endDate) },   // [start:end)
-        endDate:   { $gt: new Date(startDate) } 
-    });
+const apartment = await Apartment.findById(apartmentId);
+    if (!apartment) return res.status(404).json({ message: "Apartment not found" });
+    const sDate = new Date(startDate);
+    const eDate = new Date(endDate)
+    const overlap = apartment.BookingCalendar.some((booking) => {
+        sDate < booking.endDate && eDate > booking.startDate
+    })
     if (overlap) return res.status(400).json({message: "This date range is already booked"})
     const days =
       (new Date(endDate).getTime() - new Date(startDate).getTime()) /
       (1000 * 60 * 60 * 24);
     const totalPrice = Math.ceil(days) * Apartment.ApartmentPrice ;
-    const booking = new Booking({
-        apartmentId,
-        userId:req.user._id,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
-        totalPrice
-    })
-    await booking.save()
-    res.status(201).json(booking)
+     const newBooking = {
+  userId: req.user._id,
+  startDate: sDate,
+  endDate: eDate,
+  totalPrice
+};
+    apartment.BookingCalendar.push(newBooking);
+const updatedApartment = await apartment.save();
+
+const addedBooking = updatedApartment.BookingCalendar[updatedApartment.BookingCalendar.length - 1];
+res.status(201).json(addedBooking);
 }
  
 catch (err) {
@@ -261,9 +267,23 @@ router.get("/userBookings/:userId", verifyToken, async (req, res) => {
         if (req.user._id.toString() !== userId && req.user.role !== "Owner") {
             return res.status(403).json({ message: "Not authorized to view these bookings" });
         }
-     const bookings = await Booking.find({ userId });
+     const apartments = await Apartment.find({
+      'BookingCalendar.userId': userId,
+    });
+        const userBookings = [];
+    apartments.forEach((apt) => {
+      apt.BookingCalendar.forEach((booking) => {
+        if (booking.userId.toString() === userId) {
+          userBookings.push({
+            ...booking.toObject(),
+            apartmentId: apt._id,
+            apartmentName: apt.ApartmentName,
+          });
+        }
+      });
+    });
 
-        res.status(200).json(bookings);
+    res.status(200).json(userBookings);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: err.message });
@@ -278,7 +298,7 @@ router.get("/apartmentBookings/:apartmentId", verifyToken, async (req, res) => {
     if (apartment.OwnerId.toString() !== req.user._id && req.user.role !== "Owner") {
       return res.status(403).json({ message: "Not authorized to view these bookings" });
     }
-    const bookings = await Booking.find({ apartmentId });
+    res.status(200).json(apartment.BookingCalendar);
 
     res.status(200).json(bookings);
   } catch (err) {
@@ -288,7 +308,7 @@ router.get("/apartmentBookings/:apartmentId", verifyToken, async (req, res) => {
 });
 
 
-*/
+
 
 /*
 router.delete('/:bookingId',verifyToken, async (req,res) => {
