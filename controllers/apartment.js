@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 });
 
 // create apartment
-router.post('/', verifyToken, authorizeRole('Owner'), upload.array('ApartmentImg'), async (req, res) => {
+router.post('/', upload.array('ApartmentImg'), async (req, res) => {
     try {
 
         req.body.ApartmentImg = [];
@@ -36,8 +36,8 @@ router.post('/', verifyToken, authorizeRole('Owner'), upload.array('ApartmentImg
         }); 
         console.log(ApartmenImages);
 
-        req.body.OwnerId = req.user._id;
-        console.log(req.body.OwnerId);
+        //req.body.OwnerId = req.user._id;
+        //console.log(req.body.OwnerId);
         req.body.BookingCalendar = [];
         
         const createdApartment = await Apartment.create(req.body);
