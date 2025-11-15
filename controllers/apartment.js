@@ -241,10 +241,7 @@ const apartment = await Apartment.findById(apartmentId);
   return sDate < booking.endDate && eDate > booking.startDate;
 });
     if (overlap) return res.status(400).json({message: "This date range is already booked"})
-    const days =
-      (new Date(endDate).getTime() - new Date(startDate).getTime()) /
-      (1000 * 60 * 60 * 24);
-    const totalPrice = Math.ceil(days) * apartment.ApartmentPrice ;
+    
      const newBooking = {
   userId: req.user._id,
   startDate: sDate,
