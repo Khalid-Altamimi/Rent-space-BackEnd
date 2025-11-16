@@ -5,7 +5,7 @@ const cloudinary = require('./cloudinary')
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'Rent space',
+    folder: 'marketplace-listings',
     allowed_formats: ['jpg', 'jpeg', 'png']
   }
 })

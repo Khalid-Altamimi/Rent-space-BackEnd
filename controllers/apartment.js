@@ -24,27 +24,48 @@ router.get('/', async (req, res) => {
 // create apartment
 router.post('/', verifyToken, authorizeRole('Owner'), upload.array('ApartmentImg'), async (req, res) => {
     try {
-
-        req.body.ApartmentImg = [];
-        const ApartmenImages = req.files;
-
-        ApartmenImages.forEach(file => {
-            req.body.ApartmentImg.push({
-            url: file.path,
-            cloudinary_id: file.filename
-            });
-        }); 
-
-
-        req.body.OwnerId = req.user._id;
-
         req.body.BookingCalendar = [];
+
+        //req.body.ApartmentImg = [];
+        //const ApartmenImages = req.files;
+
+        //ApartmenImages.forEach(file => {
+        //    req.body.ApartmentImg.push({
+        //    url: file.path,
+        //    cloudinary_id: file.filename
+        //    });
+        //});
         
-        const createdApartment = await Apartment.create(req.body);
+        console.log("BODY:", req.body);
+        console.log("FILES:", req.files);
+        
+
+        const files = req.files;
+        console.log(files);                             
+
+        const images = files.map(file => ({
+          url: file.path,
+          cloudinary_id: file.filename 
+        }));
+        console.log(images);
+
+        const createdApartment = await Apartment.create({
+          ApartmentName: req.body.ApartmentName,
+          ApartmentPrice: req.body.ApartmentPrice,
+          ApartmentDescription: req.body.ApartmentDescription,
+          ApartmentCity: req.body.ApartmentCity,
+
+          ApartmentOffering: req.body.ApartmentOffering,
+
+          ApartmentImg: images, 
+
+          OwnerId: req.user._id,
+        });
+        console.log(createdApartment);
 
         res.status(201).json(createdApartment);
     } catch (err) {
-        console.error("🔥 REAL SERVER ERROR:", err);
+        console.error("🔥 REAL SERVER ERROR:", JSON.stringify(err, null, 2));
         res.status(500).json({ err: err.message, stack: err.stack });
     }
 });
@@ -123,7 +144,7 @@ router.put('/apartment/:apartmentId', authorizeRole('Owner'), upload.array('Apar
         } else {
             // If no new images are uploaded, retain existing images
             foundApartment.ApartmentImg = foundApartment.ApartmentImg.map((img, index) => ({
-                url: req.body[`currentImage${index + 1}`], // Use existing URL from hidden input
+                url: req.body[`ApartmentImg${index + 1}`], // Use existing URL from hidden input
                 cloudinary_id: img.cloudinary_id // Keep existing Cloudinary ID
             }));
         }
@@ -134,9 +155,6 @@ router.put('/apartment/:apartmentId', authorizeRole('Owner'), upload.array('Apar
         foundApartment.ApartmentDescription = req.body.ApartmentDescription; 
         foundApartment.ApartmentOffering = req.body.ApartmentOffering;
         foundApartment.ApartmentCity = req.body.ApartmentCity;
-        foundApartment.ApartmentRating = req.body.ApartmentRating; 
-        foundApartment.BookingCalendar = req.body.BookingCalendar;
-        foundApartment.OwnerId = req.body.OwnerId;
 
         // Save the updated item
         const updatedApartment = await foundApartment.save();
