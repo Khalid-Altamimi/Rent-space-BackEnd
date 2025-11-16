@@ -227,7 +227,7 @@ catch (err) {
     res.status(500).json({message: err.message})
 }
 })
-router.post("/",verifyToken, async (req,res) => {
+router.post("/booking",verifyToken, async (req,res) => {
 try{
 const {apartmentId, startDate, endDate, totalPrice} = req.body;
 if (!apartmentId || !startDate || !endDate){
