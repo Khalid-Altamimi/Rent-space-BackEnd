@@ -229,7 +229,7 @@ catch (err) {
 })
 router.post("/",verifyToken, async (req,res) => {
 try{
-const {apartmentId, startDate, endDate} = req.body;
+const {apartmentId, startDate, endDate, totalPrice} = req.body;
 if (!apartmentId || !startDate || !endDate){
     return res.status(400).json({message: "Missing booking info"})
 }
@@ -245,6 +245,7 @@ const apartment = await Apartment.findById(apartmentId);
   userId: req.user._id,
   startDate: sDate,
   endDate: eDate,
+  totalPrice
 };
     apartment.BookingCalendar.push(newBooking);
 const updatedApartment = await apartment.save();
