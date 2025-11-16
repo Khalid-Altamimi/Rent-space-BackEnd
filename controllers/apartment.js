@@ -26,12 +26,14 @@ router.post('/', verifyToken, authorizeRole('Owner'), upload.array('ApartmentImg
     try {
         req.body.BookingCalendar = [];     
 
-        const files = req.files;                           
+        const files = req.files;       
+        console.log(files)                    
 
         const images = files.map(file => ({
           url: file.path,
           cloudinary_id: file.filename 
         }));
+        console.log(images)
 
         const createdApartment = await Apartment.create({
           ApartmentName: req.body.ApartmentName,
@@ -45,6 +47,7 @@ router.post('/', verifyToken, authorizeRole('Owner'), upload.array('ApartmentImg
 
           OwnerId: req.user._id,
         });
+        console.log(createdApartment)
 
         res.status(201).json(createdApartment);
     } catch (err) {
