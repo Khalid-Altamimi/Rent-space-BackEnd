@@ -241,12 +241,10 @@ const apartment = await Apartment.findById(apartmentId);
   return sDate < booking.endDate && eDate > booking.startDate;
 });
     if (overlap) return res.status(400).json({message: "This date range is already booked"})
-    
      const newBooking = {
   userId: req.user._id,
   startDate: sDate,
   endDate: eDate,
-  totalPrice
 };
     apartment.BookingCalendar.push(newBooking);
 const updatedApartment = await apartment.save();
