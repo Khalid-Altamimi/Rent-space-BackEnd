@@ -245,9 +245,9 @@ catch (err) {
     res.status(500).json({message: err.message})
 }
 })
-router.post("/",verifyToken, async (req,res) => {
+router.post("/booking",verifyToken, async (req,res) => {
 try{
-const {apartmentId, startDate, endDate} = req.body;
+const {apartmentId, startDate, endDate, totalPrice} = req.body;
 if (!apartmentId || !startDate || !endDate){
     return res.status(400).json({message: "Missing booking info"})
 }
@@ -256,13 +256,9 @@ const apartment = await Apartment.findById(apartmentId);
     const sDate = new Date(startDate);
     const eDate = new Date(endDate)
     const overlap = apartment.BookingCalendar.some((booking) => {
-        sDate < booking.endDate && eDate > booking.startDate
-    })
+  return sDate < booking.endDate && eDate > booking.startDate;
+});
     if (overlap) return res.status(400).json({message: "This date range is already booked"})
-    const days =
-      (new Date(endDate).getTime() - new Date(startDate).getTime()) /
-      (1000 * 60 * 60 * 24);
-    const totalPrice = Math.ceil(days) * Apartment.ApartmentPrice ;
      const newBooking = {
   userId: req.user._id,
   startDate: sDate,
