@@ -216,10 +216,33 @@ router.get('/city/:city', async (req, res) => {
   }
 });
 
+//-----------------Rating routes---------------------//
 
+router.put('/apartment/:apartmentId/rating', verifyToken ,
+    authorizeRole('Customer'),
+    async (req, res)=> {
+try {
+    const rating = Number(req.body.ApartmentRating);
 
+    if (![3, 4, 5].includes(rating)) {
+        return res.status(400).json({err: 'Rating must be 3, 4, or 5'});
+    }
 
+    const FoundApartment = await Apartment.findById(req.params.apartmentId);
 
+    if (!FoundApartment) {
+        return res.status(404).json({err: 'Apartment not found'});
+    }
+
+    FoundApartment.ApartmentRating = rating;
+    const updatedApartment = await FoundApartment.save();
+
+    res.status(200).json(updatedApartment);
+    } catch (err) {
+        res.status(500).json ({err: err.message});
+    }
+}
+);
 
 
 //-----------------Booking routes---------------------//
