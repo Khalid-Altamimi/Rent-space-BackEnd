@@ -108,7 +108,7 @@ router.delete('/apartment/:apartmentId', verifyToken, authorizeRole('Owner'), as
 });
 
 //update apartment
-router.put('/apartment/:apartmentId', authorizeRole('Owner'), upload.array('ApartmentImg'), async (req, res) => {
+router.put('/apartment/:apartmentId', verifyToken, authorizeRole('Owner'), upload.array('ApartmentImg'), async (req, res) => {
   try {
 
         const foundApartment = await Apartment.findById(req.params.apartmentId);
