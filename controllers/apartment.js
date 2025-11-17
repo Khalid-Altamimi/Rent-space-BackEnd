@@ -139,13 +139,13 @@ router.put('/apartment/:apartmentId', verifyToken, authorizeRole('Owner'), uploa
                 cloudinary_id: file.filename,
             }));
             
-        } else {
-            // If no new images are uploaded, retain existing images
-            foundApartment.ApartmentImg = foundApartment.ApartmentImg.map((img, index) => ({
-                url: req.body[`ApartmentImg${index + 1}`], // Use existing URL from hidden input
-                cloudinary_id: img.cloudinary_id // Keep existing Cloudinary ID
-            }));
-        }
+        } //else {
+          //  // If no new images are uploaded, retain existing images
+          //  foundApartment.ApartmentImg = foundApartment.ApartmentImg.map((img, index) => ({
+          //      url: req.body[`ApartmentImg${index + 1}`], // Use existing URL from hidden input
+          //      cloudinary_id: img.cloudinary_id // Keep existing Cloudinary ID
+          //  }));
+          //}
 
         // Update other fields from req.body
         foundApartment.ApartmentName = req.body.ApartmentName;
