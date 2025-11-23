@@ -196,7 +196,7 @@ router.get('/apartment/:apartmentId', async (req, res) => {
     }
 });
 router.get("/owner/:ownerId", verifyToken, async (req, res) => {
-  const apartments = await Apartment.find({ OwnerId: req.params.ownerId });
+  const apartments = await Apartment.find({ ownerId: req.params.ownerId });
   res.json(apartments);
 });
 
