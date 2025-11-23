@@ -195,6 +195,10 @@ router.get('/apartment/:apartmentId', async (req, res) => {
         }
     }
 });
+router.get("/owner/:ownerId", verifyToken, async (req, res) => {
+  const apartments = await Apartment.find({ OwnerId: req.params.ownerId });
+  res.json(apartments);
+});
 
 // show city page
 router.get('/city/:city', async (req, res) => {
